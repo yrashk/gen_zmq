@@ -70,7 +70,7 @@ start_connection() ->
     gen_zmq_link_sup:start_connection().
 
 accept(MqSocket, Identity, Server, Socket) ->
-    gen_tcp:controlling_process(Socket, Server),
+    ok = gen_tcp:controlling_process(Socket, Server),
     gen_fsm:send_event(Server, {accept, MqSocket, Identity, Socket}).
 
 connect(Identity, Server, unix, Path, TcpOpts, Timeout) ->
