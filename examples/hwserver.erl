@@ -10,7 +10,7 @@ main() ->
 	Port = 5555,
 
 	{ok, Socket} = gen_zmq:start([{type, rep}]),
-	gen_zmq:bind(Socket, Port, Opts),
+	gen_zmq:bind(Socket, tcp, Port, Opts),
 	loop(Socket).
 
 loop(Socket) ->
