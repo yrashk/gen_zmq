@@ -531,10 +531,7 @@ run_recv_q(State) ->
 
 %% send a specific message to the owner
 send_owner(Transport, IdMsg, #gen_zmq_socket{pending_recv = {From, Ref}} = State) ->
-    case Ref of
-        none -> ok;
-        _ -> erlang:cancel_timer(Ref)
-    end,
+    _ = cond_cancel_timer(Ref),
     State1 = State#gen_zmq_socket{pending_recv = none},
     gen_server:reply(From, {ok, gen_zmq_socket_fsm:decap_msg(Transport, IdMsg, State)}),
     gen_zmq_socket_fsm:do({deliver, Transport}, State1);
@@ -543,6 +540,12 @@ send_owner(Transport, IdMsg, #gen_zmq_socket{owner = Owner, mode = Mode} = State
     Owner ! {zmq, self(), gen_zmq_socket_fsm:decap_msg(Transport, IdMsg, State)},
     NewState = gen_zmq_socket_fsm:do({deliver, Transport}, State),
     next_mode(NewState).
+
+cond_cancel_timer(none) -> 
+    ok;
+cond_cancel_timer(Ref) ->
+    erlang:cancel_timer(Ref).
+
 
 next_mode(#gen_zmq_socket{mode = active} = State) ->
     queue_run(State);
