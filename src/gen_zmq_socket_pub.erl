@@ -11,6 +11,9 @@
 
 -export([init/1, close/4, encap_msg/4, decap_msg/5]).
 -export([idle/4]).
+-ifdef(TEST).
+-compile(export_all)
+-endif.
 
 -record(state, {
 }).
@@ -32,6 +35,12 @@
 %%                     {stop, Reason}
 %% @end
 %%--------------------------------------------------------------------
+
+-spec init(_) -> {'ok','idle',#state{}}.
+-spec close(_,_,_,_) -> {'next_state','idle',_,_}.
+-spec encap_msg({_,_},_,_,_) -> any().
+-spec decap_msg(_,{_,_},_,_,_) -> any().
+-spec idle('check' | 'do',_,_,_) -> 'keep' | {'error','fsm'} | {'ok','undefined' | [any()]} | {'queue','block'} | {'next_state','idle',_,_}.
 
 init(_Opts) ->
     {ok, idle, #state{}}.
